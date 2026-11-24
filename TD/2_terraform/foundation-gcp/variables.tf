@@ -16,6 +16,12 @@ variable "prefix" {
   default     = "td2-mounaim"
 }
 
+variable "dns_domain" {
+  description = "Nom de la zone DNS privée, avec le point final."
+  type        = string
+  default     = "td2.internal."
+}
+
 variable "access_token" {
   description = "Valeur fictive du cours pour le plan. Utiliser null pour les identifiants Google par défaut."
   type        = string

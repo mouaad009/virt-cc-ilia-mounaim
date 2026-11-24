@@ -12,3 +12,8 @@ output "database_host" {
   description = "Hôte privé de PostgreSQL pour la configuration applicative."
   value       = google_sql_database_instance.postgres.private_ip_address
 }
+
+output "app_dns" {
+  description = "Nom DNS privé des machines applicatives."
+  value       = google_dns_record_set.app.name
+}

@@ -56,3 +56,23 @@ resource "google_sql_database_instance" "postgres" {
     }
   }
 }
+
+# DNS privé
+
+resource "google_dns_managed_zone" "app" {
+  name       = "${var.prefix}-dns"
+  dns_name   = var.dns_domain
+  visibility = "private"
+  private_visibility_config {
+    networks {
+      network_url = google_compute_network.main.id
+    }
+  }
+}
+resource "google_dns_record_set" "app" {
+  name         = "app.${google_dns_managed_zone.app.dns_name}"
+  managed_zone = google_dns_managed_zone.app.name
+  type         = "A"
+  ttl          = 60
+  rrdatas      = [google_compute_instance.app.network_interface[0].network_ip]
+}
