@@ -10,6 +10,12 @@ variable "project_id" {
   default     = "polytech-dijon"
 }
 
+variable "prefix" {
+  description = "Préfixe court et unique pour les noms des ressources."
+  type        = string
+  default     = "td2-mounaim"
+}
+
 variable "access_token" {
   description = "Valeur fictive du cours pour le plan. Utiliser null pour les identifiants Google par défaut."
   type        = string
