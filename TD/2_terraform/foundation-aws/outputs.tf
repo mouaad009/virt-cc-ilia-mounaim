@@ -1,19 +1,19 @@
 output "vpc_id" {
   description = "Identifiant du VPC."
-  value       = aws_vpc.main.id
+  value       = module.foundation.vpc_id
 }
 
 output "vm_private_ips" {
   description = "Adresses privées des machines applicatives."
-  value       = [for vm in aws_instance.app : vm.private_ip]
+  value       = module.foundation.vm_private_ips
 }
 
 output "database_host" {
   description = "Hôte privé de PostgreSQL pour la configuration applicative."
-  value       = aws_db_instance.postgres.address
+  value       = module.foundation.database_host
 }
 
 output "app_dns" {
   description = "Nom DNS privé des machines applicatives."
-  value       = aws_route53_record.app.fqdn
+  value       = module.foundation.app_dns
 }

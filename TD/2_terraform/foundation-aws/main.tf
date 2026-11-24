@@ -1,108 +1,64 @@
-# Réseau privé
+module "foundation" {
+  source = "../modules/aws"
 
-resource "aws_vpc" "main" {
-  cidr_block           = "10.20.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  tags                 = { Name = "${var.prefix}-vpc" }
-}
-
-locals {
-  subnet_cidrs = { a = "10.20.1.0/24", b = "10.20.2.0/24" }
-}
-resource "aws_subnet" "app" {
-  for_each          = local.subnet_cidrs
-  vpc_id            = aws_vpc.main.id
-  availability_zone = "${var.region}${each.key}"
-  cidr_block        = each.value
-  tags              = { Name = "${var.prefix}-${each.key}" }
+  prefix     = var.prefix
+  region     = var.region
+  dns_domain = var.dns_domain
 }
 
-# Machines virtuelles
+# Conserver les adresses de l’état après extraction du module.
 
-resource "aws_security_group" "app" {
-  name        = "${var.prefix}-app"
-  description = "Application instances"
-  vpc_id      = aws_vpc.main.id
-}
-resource "aws_instance" "app" {
-  for_each                    = aws_subnet.app
-  ami                         = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
-  instance_type               = "t3.micro"
-  subnet_id                   = each.value.id
-  vpc_security_group_ids      = [aws_security_group.app.id]
-  associate_public_ip_address = false
-  metadata_options {
-    http_tokens = "required"
-  }
-  root_block_device {
-    encrypted = true
-  }
-  tags = { Name = "${var.prefix}-vm-${each.key}" }
+moved {
+  from = aws_vpc.main
+  to   = module.foundation.aws_vpc.main
 }
 
-# PostgreSQL
-
-resource "aws_db_subnet_group" "postgres" {
-  name       = "${var.prefix}-pg"
-  subnet_ids = [for subnet in aws_subnet.app : subnet.id]
-}
-resource "aws_security_group" "postgres" {
-  name        = "${var.prefix}-pg"
-  description = "PostgreSQL from application instances"
-  vpc_id      = aws_vpc.main.id
-}
-resource "aws_vpc_security_group_ingress_rule" "postgres_from_app" {
-  security_group_id            = aws_security_group.postgres.id
-  referenced_security_group_id = aws_security_group.app.id
-  ip_protocol                  = "tcp"
-  from_port                    = 5432
-  to_port                      = 5432
-}
-resource "aws_vpc_security_group_egress_rule" "app_to_postgres" {
-  security_group_id            = aws_security_group.app.id
-  referenced_security_group_id = aws_security_group.postgres.id
-  ip_protocol                  = "tcp"
-  from_port                    = 5432
-  to_port                      = 5432
-}
-resource "aws_db_instance" "postgres" {
-  identifier                  = "${var.prefix}-pg"
-  engine                      = "postgres"
-  engine_version              = "16"
-  instance_class              = "db.t4g.micro"
-  allocated_storage           = 20
-  storage_type                = "gp3"
-  storage_encrypted           = true
-  db_name                     = "application"
-  username                    = "appadmin"
-  manage_master_user_password = true
-  db_subnet_group_name        = aws_db_subnet_group.postgres.name
-  vpc_security_group_ids      = [aws_security_group.postgres.id]
-  publicly_accessible         = false
-  skip_final_snapshot         = true
+moved {
+  from = aws_subnet.app
+  to   = module.foundation.aws_subnet.app
 }
 
-# DNS privé
-
-resource "aws_route53_zone" "app" {
-  name = var.dns_domain
-  vpc {
-    vpc_id = aws_vpc.main.id
-  }
-  tags = { Name = "${var.prefix}-dns" }
+moved {
+  from = aws_security_group.app
+  to   = module.foundation.aws_security_group.app
 }
-resource "aws_route53_record" "app" {
-  zone_id = aws_route53_zone.app.zone_id
-  name    = "app.${var.dns_domain}"
-  type    = "A"
-  ttl     = 60
-  records = [for vm in aws_instance.app : vm.private_ip]
-}
-
-# Migration de la première VM vers for_each
 
 moved {
   from = aws_instance.app
-  to   = aws_instance.app["a"]
+  to   = module.foundation.aws_instance.app
+}
+
+moved {
+  from = aws_db_subnet_group.postgres
+  to   = module.foundation.aws_db_subnet_group.postgres
+}
+
+moved {
+  from = aws_security_group.postgres
+  to   = module.foundation.aws_security_group.postgres
+}
+
+moved {
+  from = aws_vpc_security_group_ingress_rule.postgres_from_app
+  to   = module.foundation.aws_vpc_security_group_ingress_rule.postgres_from_app
+}
+
+moved {
+  from = aws_vpc_security_group_egress_rule.app_to_postgres
+  to   = module.foundation.aws_vpc_security_group_egress_rule.app_to_postgres
+}
+
+moved {
+  from = aws_db_instance.postgres
+  to   = module.foundation.aws_db_instance.postgres
+}
+
+moved {
+  from = aws_route53_zone.app
+  to   = module.foundation.aws_route53_zone.app
+}
+
+moved {
+  from = aws_route53_record.app
+  to   = module.foundation.aws_route53_record.app
 }
