@@ -7,3 +7,8 @@ output "vm_private_ips" {
   description = "Adresses privées des machines applicatives."
   value       = [google_compute_instance.app.network_interface[0].network_ip]
 }
+
+output "database_host" {
+  description = "Hôte privé de PostgreSQL pour la configuration applicative."
+  value       = google_sql_database_instance.postgres.private_ip_address
+}

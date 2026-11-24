@@ -26,3 +26,33 @@ resource "google_compute_instance" "app" {
     subnetwork = google_compute_subnetwork.app.id
   }
 }
+
+# PostgreSQL
+
+resource "google_compute_global_address" "services" {
+  name          = "${var.prefix}-services"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.main.id
+}
+resource "google_service_networking_connection" "services" {
+  network                 = google_compute_network.main.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.services.name]
+}
+resource "google_sql_database_instance" "postgres" {
+  name             = "${var.prefix}-pg"
+  region           = var.region
+  database_version = "POSTGRES_16"
+  depends_on       = [google_service_networking_connection.services]
+  settings {
+    edition = "ENTERPRISE"
+    tier    = "db-custom-1-3840"
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = google_compute_network.main.self_link
+      ssl_mode        = "ENCRYPTED_ONLY"
+    }
+  }
+}
