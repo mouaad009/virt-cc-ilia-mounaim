@@ -5,7 +5,7 @@ output "vpc_id" {
 
 output "vm_private_ips" {
   description = "Adresses privées des machines applicatives."
-  value       = [google_compute_instance.app.network_interface[0].network_ip]
+  value       = [for vm in google_compute_instance.app : vm.network_interface[0].network_ip]
 }
 
 output "database_host" {

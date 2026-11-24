@@ -14,8 +14,9 @@ resource "google_compute_subnetwork" "app" {
 # Machines virtuelles
 
 resource "google_compute_instance" "app" {
-  name         = "${var.prefix}-vm-b"
-  zone         = "${var.region}-b"
+  for_each     = var.zone_suffixes
+  name         = "${var.prefix}-vm-${each.key}"
+  zone         = "${var.region}-${each.key}"
   machine_type = "e2-micro"
   boot_disk {
     initialize_params {
@@ -74,5 +75,12 @@ resource "google_dns_record_set" "app" {
   managed_zone = google_dns_managed_zone.app.name
   type         = "A"
   ttl          = 60
-  rrdatas      = [google_compute_instance.app.network_interface[0].network_ip]
+  rrdatas      = [for vm in google_compute_instance.app : vm.network_interface[0].network_ip]
+}
+
+# Migration de la première VM vers for_each
+
+moved {
+  from = google_compute_instance.app
+  to   = google_compute_instance.app["b"]
 }
