@@ -4,6 +4,12 @@ variable "region" {
   default     = "eu-west-3"
 }
 
+variable "prefix" {
+  description = "Préfixe court et unique pour les noms des ressources."
+  type        = string
+  default     = "td2-mounaim"
+}
+
 variable "plan_de_cours" {
   description = "Utiliser des valeurs fictives pour planifier le TD sur un état vide. Désactiver avec un vrai compte AWS."
   type        = bool
