@@ -5,7 +5,7 @@ output "vpc_id" {
 
 output "vm_private_ips" {
   description = "Adresses privées des machines applicatives."
-  value       = [aws_instance.app.private_ip]
+  value       = [for vm in aws_instance.app : vm.private_ip]
 }
 
 output "database_host" {

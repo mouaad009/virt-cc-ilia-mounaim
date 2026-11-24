@@ -26,9 +26,10 @@ resource "aws_security_group" "app" {
   vpc_id      = aws_vpc.main.id
 }
 resource "aws_instance" "app" {
+  for_each                    = aws_subnet.app
   ami                         = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
   instance_type               = "t3.micro"
-  subnet_id                   = aws_subnet.app["a"].id
+  subnet_id                   = each.value.id
   vpc_security_group_ids      = [aws_security_group.app.id]
   associate_public_ip_address = false
   metadata_options {
@@ -37,7 +38,7 @@ resource "aws_instance" "app" {
   root_block_device {
     encrypted = true
   }
-  tags = { Name = "${var.prefix}-vm-a" }
+  tags = { Name = "${var.prefix}-vm-${each.key}" }
 }
 
 # PostgreSQL
@@ -96,5 +97,12 @@ resource "aws_route53_record" "app" {
   name    = "app.${var.dns_domain}"
   type    = "A"
   ttl     = 60
-  records = [aws_instance.app.private_ip]
+  records = [for vm in aws_instance.app : vm.private_ip]
+}
+
+# Migration de la première VM vers for_each
+
+moved {
+  from = aws_instance.app
+  to   = aws_instance.app["a"]
 }
