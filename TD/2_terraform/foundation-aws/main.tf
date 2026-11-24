@@ -17,3 +17,25 @@ resource "aws_subnet" "app" {
   cidr_block        = each.value
   tags              = { Name = "${var.prefix}-${each.key}" }
 }
+
+# Machines virtuelles
+
+resource "aws_security_group" "app" {
+  name        = "${var.prefix}-app"
+  description = "Application instances"
+  vpc_id      = aws_vpc.main.id
+}
+resource "aws_instance" "app" {
+  ami                         = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.app["a"].id
+  vpc_security_group_ids      = [aws_security_group.app.id]
+  associate_public_ip_address = false
+  metadata_options {
+    http_tokens = "required"
+  }
+  root_block_device {
+    encrypted = true
+  }
+  tags = { Name = "${var.prefix}-vm-a" }
+}
