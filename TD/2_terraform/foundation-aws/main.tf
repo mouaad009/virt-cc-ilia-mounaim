@@ -81,3 +81,20 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible         = false
   skip_final_snapshot         = true
 }
+
+# DNS privé
+
+resource "aws_route53_zone" "app" {
+  name = var.dns_domain
+  vpc {
+    vpc_id = aws_vpc.main.id
+  }
+  tags = { Name = "${var.prefix}-dns" }
+}
+resource "aws_route53_record" "app" {
+  zone_id = aws_route53_zone.app.zone_id
+  name    = "app.${var.dns_domain}"
+  type    = "A"
+  ttl     = 60
+  records = [aws_instance.app.private_ip]
+}
