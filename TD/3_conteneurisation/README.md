@@ -139,3 +139,19 @@ exit
 ```
 
 **Résultat attendu** — `whoami` renvoie `nonroot`. `apt install curl` échoue avec une erreur de permission. Installer les paquets dans le Dockerfile avant `USER` permet de préparer l’image avec les droits requis. L’installation interactive de `curl` dans l’ancien conteneur disparaît lorsque celui-ci est supprimé.
+
+## Sauvegarder le frontend dans Artifact Registry
+
+Installer [gcloud](https://docs.cloud.google.com/sdk/docs/install-sdk?hl=fr#latest-version) et exécuter toutes les commandes dans le même terminal. Conserver le JSON fourni par Teams dans un dossier privé extérieur au dépôt, puis adapter son chemin local.
+
+```sh
+gcloud auth activate-service-account student@polytech-dijon.iam.gserviceaccount.com --key-file="/chemin/prive/student.json"
+gcloud config set project polytech-dijon
+gcloud auth configure-docker europe-west1-docker.pkg.dev
+docker tag mon-frontend europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim
+docker push europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim
+```
+
+Répondre `Y` aux confirmations. Le tag `mounaim` correspond au travail individuel. La réussite du push se vérifie à partir du digest renvoyé par le registre. Les configurations Docker et gcloud restent à l’extérieur du dépôt.
+
+Faire vérifier l’image par l’enseignant, comme demandé à la fin du TD.
