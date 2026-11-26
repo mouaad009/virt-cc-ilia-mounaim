@@ -74,3 +74,16 @@ Le Dockerfile utilise `FROM debian:latest`.
 ### 2 · Installer les outils
 
 `RUN` installe `bash`, `htop`, `vim` et `net-tools`. Le paquet `net-tools` fournit `netstat`.
+
+### 3 · Définir OWNER et démarrer le conteneur
+
+`ENV OWNER=Mouaad` définit mon prénom. `CMD ["sleep", "3600"]` garde le conteneur actif pendant une heure.
+
+**Pourquoi aucun EXPOSE ?** La boîte à outils n’exécute aucun serveur réseau.
+
+L’image Debian fournit habituellement `bash` par défaut. Un shell détaché sans entrée interactive peut se terminer immédiatement. Le `sleep 3600` du TD permet d’utiliser ensuite `docker exec`.
+
+```sh
+docker build ./backend -t toolbox
+docker run -d --name toolbox-ctn toolbox
+```
