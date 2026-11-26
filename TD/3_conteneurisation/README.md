@@ -155,3 +155,30 @@ docker push europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2
 Répondre `Y` aux confirmations. Le tag `mounaim` correspond au travail individuel. La réussite du push se vérifie à partir du digest renvoyé par le registre. Les configurations Docker et gcloud restent à l’extérieur du dépôt.
 
 Faire vérifier l’image par l’enseignant, comme demandé à la fin du TD.
+
+## Bonus · RabbitMQ Hello World
+
+Exemple adapté du [tutoriel officiel Python](https://www.rabbitmq.com/tutorials/tutorial-one-python).
+
+Dans un premier terminal, démarrer le serveur avec la commande du TD.
+
+```sh
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+```
+
+Dans un deuxième terminal, créer un environnement Python.
+
+```sh
+python -m venv rabbitmq/.venv
+```
+
+Sous Windows PowerShell, lancer `rabbitmq/.venv/Scripts/Activate.ps1`. Sous Linux, lancer `source rabbitmq/.venv/bin/activate`. Puis exécuter les commandes suivantes.
+
+```sh
+python -m pip install -r rabbitmq/requirements.txt
+python rabbitmq/receive.py
+```
+
+Dans un troisième terminal avec le même environnement activé, lancer `python rabbitmq/send.py`.
+
+Le producteur envoie `Hello World!` à la file `hello`. Le consommateur attend et affiche les messages. `auto_ack=True` reprend l’exemple introductif. L’interface de gestion se trouve sur http://localhost:15672 avec le compte local `guest`.
