@@ -51,3 +51,16 @@ docker run -d --name frontend-ctn -p 8080:80 mon-frontend
 ```
 
 Ouvrir http://localhost:8080 dans le navigateur. Le port 8080 de l’hôte redirige vers le port 80 du conteneur.
+
+### 9 · Modifier et redéployer
+
+La page est passée de « Version 1 » à « Version 2 · Page mise à jour ».
+
+```sh
+docker stop frontend-ctn
+docker rm frontend-ctn
+docker build ./frontend -t mon-frontend
+docker run -d --name frontend-ctn -p 8080:80 mon-frontend
+```
+
+**Observation attendue** — Modifier uniquement le fichier local conserve le contenu du conteneur existant. `COPY` a copié la page pendant la construction. Reconstruire l’image puis recréer le conteneur rend la nouvelle version disponible.
