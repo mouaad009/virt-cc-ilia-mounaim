@@ -121,3 +121,21 @@ curl http://<IP-host>:8080
 Sur Docker Desktop, `host.docker.internal` permet aussi de joindre l’hôte si l’interface Docker est interne à sa VM.
 
 **Résultat attendu** — `curl` affiche le HTML servi par Nginx via le port 8080 de l’hôte.
+
+### Gestion des droits utilisateur
+
+Dans le premier conteneur, `whoami` renvoie `root` et l’installation de `curl` est permise. Le Dockerfile final ajoute `RUN useradd nonroot` puis `USER nonroot`.
+
+```sh
+exit
+docker stop toolbox-ctn
+docker rm toolbox-ctn
+docker build ./backend -t toolbox
+docker run -d --name toolbox-ctn toolbox
+docker exec -it toolbox-ctn /bin/bash
+whoami
+apt install curl
+exit
+```
+
+**Résultat attendu** — `whoami` renvoie `nonroot`. `apt install curl` échoue avec une erreur de permission. Installer les paquets dans le Dockerfile avant `USER` permet de préparer l’image avec les droits requis. L’installation interactive de `curl` dans l’ancien conteneur disparaît lorsque celui-ci est supprimé.
