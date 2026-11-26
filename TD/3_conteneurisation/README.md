@@ -11,3 +11,7 @@ Les commandes s’exécutent depuis `TD/3_conteneurisation` avec Docker démarr�
 Le fichier `student.json` reste hors du dépôt et des contextes Docker. Le `.gitignore` exclut les identifiants et les clés. Chaque `.dockerignore` autorise uniquement les fichiers utiles à son image. La clé est réservée à l’authentification au registre Google.
 
 ## Frontend
+
+### 1 · Créer la page
+
+`frontend/index.html` contient le HTML et son CSS. Il peut être ouvert directement dans un navigateur.
