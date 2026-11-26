@@ -64,3 +64,9 @@ docker run -d --name frontend-ctn -p 8080:80 mon-frontend
 ```
 
 **Observation attendue** — Modifier uniquement le fichier local conserve le contenu du conteneur existant. `COPY` a copié la page pendant la construction. Reconstruire l’image puis recréer le conteneur rend la nouvelle version disponible.
+
+## Backend · Boîte à outils
+
+### 1 · Choisir Debian
+
+Le Dockerfile utilise `FROM debian:latest`.
