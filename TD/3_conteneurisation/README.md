@@ -19,3 +19,7 @@ Le fichier `student.json` reste hors du dépôt et des contextes Docker. Le `.gi
 ### 2 · Choisir Nginx
 
 `FROM nginx:latest` utilise la dernière image Nginx.
+
+### 3 · Copier la page
+
+`COPY index.html /usr/share/nginx/html/` enregistre la page dans l’image, dans le dossier servi par Nginx.
