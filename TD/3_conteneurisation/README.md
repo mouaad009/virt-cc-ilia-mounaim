@@ -15,3 +15,7 @@ Le fichier `student.json` reste hors du dépôt et des contextes Docker. Le `.gi
 ### 1 · Créer la page
 
 `frontend/index.html` contient le HTML et son CSS. Il peut être ouvert directement dans un navigateur.
+
+### 2 · Choisir Nginx
+
+`FROM nginx:latest` utilise la dernière image Nginx.
