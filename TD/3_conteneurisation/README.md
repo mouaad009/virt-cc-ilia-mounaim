@@ -197,7 +197,7 @@ Le producteur envoie `Hello World!` à la file `hello`. Le consommateur attend e
 
 ## Vérifications réellement effectuées le 26 novembre 2026
 
-Les tests ont été exécutés dans une machine Linux de test avec Docker 29.0.4. Ils ne correspondent pas à des commandes exécutées sur mon PC Windows.
+Les tests du frontend, du backend et de RabbitMQ ont été exécutés dans une machine Linux de test avec Docker 29.0.4. La consultation du site dans le navigateur et la publication de l’image ont ensuite été réalisées depuis mon PC Windows, le 26 novembre 2026.
 
 | Vérification | Résultat |
 | --- | --- |
@@ -214,15 +214,23 @@ Les tests ont été exécutés dans une machine Linux de test avec Docker 29.0.4
 | Installation avec nonroot | Refusée : permission refusée sur le verrou dpkg |
 | Bonus RabbitMQ 3.12-management | Producteur et consommateur testés : `Hello World!` envoyé et reçu |
 | Authentification gcloud et configuration du projet/registre | Effectuées |
-| Publication de l’image | Non effectuée : accès réseau au domaine du registre bloqué dans l’environnement de test |
+| Publication de l’image | Réussie depuis mon PC Windows le 26 novembre 2026, avec le tag `mounaim` |
 
-Le contrôle HTTP a été automatisé avec `curl`. La consultation visuelle dans le navigateur à l’étape 8 reste à reproduire sur le PC avec http://localhost:8080.
+Le contrôle HTTP a été automatisé avec `curl`. La consultation visuelle à l’étape 8 a ensuite été réalisée sur mon PC Windows à l’adresse http://localhost:8080 : la page « Version 2 · Page mise à jour » s’affiche correctement.
 
-### Publication à terminer sur le PC
+### Publication effectuée depuis le PC
 
-L’autorisation d’accès au projet Google a été vérifiée, mais la connexion Docker au domaine `europe-west1-docker.pkg.dev` a été bloquée par la politique réseau de l’environnement de test. Aucun digest d’image publiée n’est donc annoncé.
+La publication a réussi depuis mon PC Windows le 26 novembre 2026. L’image est disponible à l’adresse `europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim`.
 
-Dans le même terminal, après les commandes gcloud indiquées plus haut, exécuter :
+Le résultat du `docker push` fourni en capture confirme le digest :
+
+```text
+sha256:0e97975e1fb616a1cc9c254032eb1b9dd8dc9cb894c95eedb01c2c630e165cc8
+```
+
+Dans PowerShell, `gcloud.cmd` a été utilisé à la place de `gcloud`, car l’exécution du script `gcloud.ps1` était bloquée.
+
+Commandes conservées pour reproduire la publication, dans le même terminal après la configuration gcloud :
 
 ```sh
 docker build ./frontend -t mon-frontend
@@ -230,7 +238,7 @@ docker tag mon-frontend europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijo
 docker push europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim
 ```
 
-Relever le digest affiché à la fin du push, puis demander la vérification à l’enseignant.
+La vérification de l’image avec l’enseignant reste à effectuer ; elle peut être demandée à distance ou lors du prochain cours.
 
 ### Confidentialité Teams
 
@@ -254,4 +262,4 @@ Sortie du consommateur :
  [x] Received b'Hello World!'
 ```
 
-Les tests du frontend, de la boîte à outils et du bonus sont validés. Restent la consultation dans le navigateur sur le PC, le push vers Artifact Registry depuis un réseau autorisé et la vérification de cette publication avec l’enseignant.
+Les tests du frontend, de la boîte à outils et du bonus sont validés. Le site a été consulté dans le navigateur et l’image a été publiée dans Artifact Registry depuis mon PC Windows. Seule la vérification de cette publication avec l’enseignant reste à effectuer.
