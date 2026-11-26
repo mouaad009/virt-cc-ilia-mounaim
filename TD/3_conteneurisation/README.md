@@ -212,6 +212,7 @@ Les tests ont été exécutés dans une machine Linux de test avec Docker 29.0.4
 | Appel depuis toolbox vers `172.17.0.1:8080` | HTML du frontend reçu |
 | Utilisateur final | `whoami` renvoie `nonroot` |
 | Installation avec nonroot | Refusée : permission refusée sur le verrou dpkg |
+| Bonus RabbitMQ 3.12-management | Producteur et consommateur testés : `Hello World!` envoyé et reçu |
 | Authentification gcloud et configuration du projet/registre | Effectuées |
 | Publication de l’image | Non effectuée : accès réseau au domaine du registre bloqué dans l’environnement de test |
 
@@ -234,3 +235,23 @@ Relever le digest affiché à la fin du push, puis demander la vérification à 
 ### Confidentialité Teams
 
 Les contenus des 15 commits de préparation du TD3 ont été contrôlés : aucun fichier `student.json` ni clé privée n’y a été trouvé. L’archive de l’image frontend construite a également été contrôlée : elle ne contient ni l’identifiant de la clé fournie, ni sa valeur privée, ni le jeton temporaire utilisé pour la tentative d’authentification. Le fichier original est resté extérieur au dépôt et aux contextes de construction.
+
+
+### Résultat du bonus RabbitMQ
+
+Le serveur `rabbitmq:3.12-management` a été démarré avec les ports 5672 et 15672 publiés. Son interface de gestion a répondu, puis les deux scripts Python ont été exécutés avec `pika==1.3.2`.
+
+Sortie du producteur :
+
+```text
+ [x] Sent 'Hello World!'
+```
+
+Sortie du consommateur :
+
+```text
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received b'Hello World!'
+```
+
+Les tests du frontend, de la boîte à outils et du bonus sont validés. Restent la consultation dans le navigateur sur le PC, le push vers Artifact Registry depuis un réseau autorisé et la vérification de cette publication avec l’enseignant.
