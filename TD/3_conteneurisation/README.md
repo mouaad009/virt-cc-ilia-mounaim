@@ -43,3 +43,11 @@ cd frontend
 docker build . -t mon-frontend
 cd ..
 ```
+
+### 7–8 · Démarrer et ouvrir le site
+
+```sh
+docker run -d --name frontend-ctn -p 8080:80 mon-frontend
+```
+
+Ouvrir http://localhost:8080 dans le navigateur. Le port 8080 de l’hôte redirige vers le port 80 du conteneur.
