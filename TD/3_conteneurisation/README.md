@@ -90,7 +90,17 @@ docker run -d --name toolbox-ctn toolbox
 
 ### Utiliser les outils et joindre le frontend
 
-Dans un second terminal, avant l’étape `USER nonroot` suivante, se connecter au conteneur.
+Le dépôt contient la version finale avec `USER nonroot`. Pour refaire l’expérience en root, récupérer le Dockerfile de l’étape précédente, puis reconstruire l’image et démarrer le conteneur :
+
+```sh
+git show c5f20fd:TD/3_conteneurisation/backend/Dockerfile > backend/Dockerfile
+docker build ./backend -t toolbox
+docker run -d --name toolbox-ctn toolbox
+```
+
+Si `toolbox-ctn` existe déjà, l’arrêter et le supprimer avant de le recréer.
+
+Dans un second terminal, se connecter au conteneur.
 
 ```sh
 docker exec -it toolbox-ctn /bin/bash
@@ -130,6 +140,7 @@ Dans le premier conteneur, `whoami` renvoie `root` et l’installation de `curl`
 exit
 docker stop toolbox-ctn
 docker rm toolbox-ctn
+git restore backend/Dockerfile
 docker build ./backend -t toolbox
 docker run -d --name toolbox-ctn toolbox
 docker exec -it toolbox-ctn /bin/bash
@@ -182,3 +193,44 @@ python rabbitmq/receive.py
 Dans un troisième terminal avec le même environnement activé, lancer `python rabbitmq/send.py`.
 
 Le producteur envoie `Hello World!` à la file `hello`. Le consommateur attend et affiche les messages. `auto_ack=True` reprend l’exemple introductif. L’interface de gestion se trouve sur http://localhost:15672 avec le compte local `guest`.
+
+
+## Vérifications réellement effectuées le 26 novembre 2026
+
+Les tests ont été exécutés dans une machine Linux de test avec Docker 29.0.4. Ils ne correspondent pas à des commandes exécutées sur mon PC Windows.
+
+| Vérification | Résultat |
+| --- | --- |
+| Construction du frontend avec `nginx:latest` | Réussie |
+| `ENTRYPOINT` / `CMD` hérités | `/docker-entrypoint.sh` puis `nginx -g 'daemon off;'` |
+| HTTP sur le port 8080 | Version 1 reçue |
+| Modification du HTML sans reconstruction | L’ancienne page reste servie |
+| Reconstruction et recréation du conteneur | Version 2 reçue |
+| Outils dans la boîte à outils | Bash, htop, Vim et netstat disponibles |
+| Variable d’environnement | `OWNER=Mouaad` |
+| Installation de curl en root | Réussie |
+| Appel depuis toolbox vers `172.17.0.1:8080` | HTML du frontend reçu |
+| Utilisateur final | `whoami` renvoie `nonroot` |
+| Installation avec nonroot | Refusée : permission refusée sur le verrou dpkg |
+| Authentification gcloud et configuration du projet/registre | Effectuées |
+| Publication de l’image | Non effectuée : accès réseau au domaine du registre bloqué dans l’environnement de test |
+
+Le contrôle HTTP a été automatisé avec `curl`. La consultation visuelle dans le navigateur à l’étape 8 reste à reproduire sur le PC avec http://localhost:8080.
+
+### Publication à terminer sur le PC
+
+L’autorisation d’accès au projet Google a été vérifiée, mais la connexion Docker au domaine `europe-west1-docker.pkg.dev` a été bloquée par la politique réseau de l’environnement de test. Aucun digest d’image publiée n’est donc annoncé.
+
+Dans le même terminal, après les commandes gcloud indiquées plus haut, exécuter :
+
+```sh
+docker build ./frontend -t mon-frontend
+docker tag mon-frontend europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim
+docker push europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/frontend-2026:mounaim
+```
+
+Relever le digest affiché à la fin du push, puis demander la vérification à l’enseignant.
+
+### Confidentialité Teams
+
+Les contenus des 15 commits de préparation du TD3 ont été contrôlés : aucun fichier `student.json` ni clé privée n’y a été trouvé. L’archive de l’image frontend construite a également été contrôlée : elle ne contient ni l’identifiant de la clé fournie, ni sa valeur privée, ni le jeton temporaire utilisé pour la tentative d’authentification. Le fichier original est resté extérieur au dépôt et aux contextes de construction.
