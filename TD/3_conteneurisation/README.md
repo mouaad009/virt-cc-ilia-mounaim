@@ -35,3 +35,11 @@ L’image officielle fournit `ENTRYPOINT ["/docker-entrypoint.sh"]` et `CMD ["ng
 ```sh
 docker image inspect nginx:latest --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ```
+
+### 6 · Construire l’image
+
+```sh
+cd frontend
+docker build . -t mon-frontend
+cd ..
+```
