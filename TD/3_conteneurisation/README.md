@@ -23,3 +23,15 @@ Le fichier `student.json` reste hors du dépôt et des contextes Docker. Le `.gi
 ### 3 · Copier la page
 
 `COPY index.html /usr/share/nginx/html/` enregistre la page dans l’image, dans le dossier servi par Nginx.
+
+### 4–5 · Déclarer le port et sauvegarder
+
+`EXPOSE 80` documente le port du conteneur. La publication sur l’hôte sera configurée par `-p`.
+
+**Point d’entrée et commande de démarrage**
+
+L’image officielle fournit `ENTRYPOINT ["/docker-entrypoint.sh"]` et `CMD ["nginx", "-g", "daemon off;"]`. Le script prépare la configuration et lance Nginx au premier plan. Notre Dockerfile hérite de ces valeurs.
+
+```sh
+docker image inspect nginx:latest --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+```
