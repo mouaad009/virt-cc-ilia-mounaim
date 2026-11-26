@@ -87,3 +87,37 @@ L’image Debian fournit habituellement `bash` par défaut. Un shell détaché s
 docker build ./backend -t toolbox
 docker run -d --name toolbox-ctn toolbox
 ```
+
+### Utiliser les outils et joindre le frontend
+
+Dans un second terminal, avant l’étape `USER nonroot` suivante, se connecter au conteneur.
+
+```sh
+docker exec -it toolbox-ctn /bin/bash
+echo "$OWNER"
+bash --version
+htop
+vim
+netstat -an
+whoami
+apt-get update
+apt-get install -y curl
+```
+
+Quitter `htop` avec `q`. Quitter `vim` avec Échap, puis `:q!` et Entrée.
+
+Dans un troisième terminal, démarrer le frontend s’il n’est pas déjà actif.
+
+```sh
+docker run -d --name frontend-ctn -p 8080:80 mon-frontend
+```
+
+Sur l’hôte Linux, `ip -4 addr show docker0` donne l’adresse de l’interface Docker. Sous Windows, utiliser `ipconfig`. Puis, dans la boîte à outils, remplacer `<IP-host>` par l’adresse relevée.
+
+```sh
+curl http://<IP-host>:8080
+```
+
+Sur Docker Desktop, `host.docker.internal` permet aussi de joindre l’hôte si l’interface Docker est interne à sa VM.
+
+**Résultat attendu** — `curl` affiche le HTML servi par Nginx via le port 8080 de l’hôte.
