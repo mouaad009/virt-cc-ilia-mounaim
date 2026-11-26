@@ -1,0 +1,10 @@
+student*.json
+*credentials*.json
+.env
+.env.*
+*.pem
+*.key
+.config/
+.docker/
+__pycache__/
+.venv/
