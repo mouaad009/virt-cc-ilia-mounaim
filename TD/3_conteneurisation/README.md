@@ -70,3 +70,7 @@ docker run -d --name frontend-ctn -p 8080:80 mon-frontend
 ### 1 · Choisir Debian
 
 Le Dockerfile utilise `FROM debian:latest`.
+
+### 2 · Installer les outils
+
+`RUN` installe `bash`, `htop`, `vim` et `net-tools`. Le paquet `net-tools` fournit `netstat`.
